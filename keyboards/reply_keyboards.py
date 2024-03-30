@@ -1,6 +1,7 @@
 from aiogram.types import KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
+
 start_keyboard = ReplyKeyboardBuilder()
 start_keyboard.add(
     KeyboardButton(text="Турниры"),
