@@ -14,8 +14,8 @@ start_keyboard.adjust(2, 2)
 
 follow_teams_keyboard = ReplyKeyboardBuilder()
 follow_teams_keyboard.add(
-    KeyboardButton(text='Добавить команду'),
-    KeyboardButton(text='Удалить команду'),
+    KeyboardButton(text='Добавить отслеживаемую команду'),
+    KeyboardButton(text='Удалить команду из отслеживаемых'),
     KeyboardButton(text='Назад')
 )
 follow_teams_keyboard.adjust(2, 1)
@@ -28,3 +28,10 @@ tournaments_keyboard.add(
     KeyboardButton(text='Назад')
 )
 tournaments_keyboard.adjust(2,)
+
+
+fsm_keyboard = ReplyKeyboardBuilder()
+fsm_keyboard.add(
+    KeyboardButton(text='Отмена'),
+    KeyboardButton(text='Назад')
+)
