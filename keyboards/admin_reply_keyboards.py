@@ -22,6 +22,6 @@ default_admin_keyboard.row(
 fsm_keyboard = ReplyKeyboardBuilder()
 fsm_keyboard.add(
     KeyboardButton(text='Шаг назад'),
-    KeyboardButton(text='Отмена')
+    KeyboardButton(text='Отмена действия')
 )
 fsm_keyboard.adjust(2, )
