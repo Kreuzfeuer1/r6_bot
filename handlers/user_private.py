@@ -7,6 +7,7 @@ from keyboards import  reply_keyboards
 
 user_private_router = Router()
 
+
 @user_private_router.message(or_f(CommandStart(), (F.text == 'Назад')))
 async def start_cmd(message: types.Message):
     await message.answer('Что вас интересует?',
@@ -34,6 +35,7 @@ async def follow_teams_cmd(message: types.Message):
             reply_markup=reply_keyboards.follow_teams_keyboard.as_markup(
                 resize_keyboard=True,
                 input_field_placeholder='Что вас интересует?'))
+
 
 """FSM code for cancel all actions"""
 @user_private_router.message(StateFilter('*'), Command('отмена'))
@@ -106,7 +108,6 @@ async def ending_delete_follow_team(message: types.Message, state: FSMContext):
 @user_private_router.message(StateFilter(DeleteFollowTeam.name))
 async def err_ending_delete_follow_team(message: types.Message, state: FSMContext):
     await message.answer('Вы введи не допустимые данные, введите название команды текстом')
-
 
 
 @user_private_router.message(or_f(Command('results'), (F.text == 'Результаты последних матчей')))

@@ -3,6 +3,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from keyboards.reply_keyboards import start_keyboard
 
+
 start_admin_keyboard = ReplyKeyboardBuilder()
 start_admin_keyboard.add(
     KeyboardButton(text="Зашёл просто так"),
