@@ -8,7 +8,8 @@ from aiogram.fsm.strategy import FSMStrategy
 from dotenv import find_dotenv, load_dotenv
 load_dotenv(find_dotenv())
 
-from database.engine import create_db, drop_db
+from middlewares.db import DataBaseSession
+from database.engine import create_db, drop_db, session_maker
 from handlers.user_private import user_private_router
 from handlers.group import group_router
 from handlers.admin_private import admin_router
@@ -42,6 +43,9 @@ async def on_shutdown(bot):
 async def main():
     db.startup.register(on_start)
     db.shutdown.register(on_shutdown)
+
+    db.update.middleware(DataBaseSession(session_pool=session_maker))
+
     await bot.delete_webhook(drop_pending_updates=True)
     await bot.set_my_commands(commands=private, scope=types.BotCommandScopeAllPrivateChats())
     await db.start_polling(bot, allowed_updates=ALLOWED_UPDATES)
