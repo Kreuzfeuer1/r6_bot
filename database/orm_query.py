@@ -1,3 +1,4 @@
+from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import Team
@@ -16,3 +17,9 @@ async def orm_add_team(session: AsyncSession, data: dict):
     )
     session.add(object)
     await session.commit()
+
+
+async def orm_get_all_teams(session: AsyncSession):
+    query = select(Team)
+    result = await session.execute(query)
+    return result.scalars().all()

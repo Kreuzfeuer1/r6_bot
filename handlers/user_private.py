@@ -2,8 +2,11 @@ from aiogram import  F, types, Router
 from aiogram.filters import CommandStart, Command, or_f, StateFilter
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from keyboards import  reply_keyboards
+
+from database.orm_query import orm_get_all_teams
 
 user_private_router = Router()
 
@@ -57,8 +60,10 @@ class AddFollowTeam(StatesGroup):
 
 
 @user_private_router.message(StateFilter(None), F.text == 'Добавить отслеживаемую команду')
-async def add_follow_team_name(message: types.Message, state: FSMContext):
-    await message.answer('Введите название команды',
+async def add_follow_team_name(message: types.Message, state: FSMContext, session: AsyncSession):
+    for team in await orm_get_all_teams(session=session):
+        await message.answer(team.name)
+    await message.answer('Введите название команды из приведённого выше списка',
             reply_markup=reply_keyboards.fsm_keyboard.as_markup(
                 resize_keyboard=True
             ))
