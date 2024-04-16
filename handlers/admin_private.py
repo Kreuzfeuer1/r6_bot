@@ -2,6 +2,9 @@ from aiogram import F, Router, types
 from aiogram.filters import Command, or_f, StateFilter
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext 
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from database.orm_query import orm_add_team
 
 from filters.chat_types_filters import ChatTypeFilter, IsAdmin
 from keyboards import admin_reply_keyboards, reply_keyboards
@@ -174,14 +177,21 @@ async def err_add_second_player(message: types.Message, state: FSMContext):
 
 
 @admin_router.message(StateFilter(AddTeam.logo), F.photo)
-async def end_adding_team(message: types.Message, state: FSMContext):
-    await state.update_data(logo=message.photo[-1].file_id)
-    await message.answer("Команда добавлена",
+async def end_adding_team(message: types.Message, state: FSMContext, session: AsyncSession):
+    await state.update_data(logo=message.photo[-1].file_id)    
+    data = await state.get_data()
+    try:
+        await orm_add_team(session=session, data=data)
+        await message.answer("Команда добавлена",
             reply_markup=admin_reply_keyboards.default_admin_keyboard.as_markup(
                 resize_keyboard=True))
-    data = await state.get_data()
-    await message.answer(str(data))
-    await state.clear()
+        await state.clear()
+    except Exception as err:
+        await message.answer(
+            f"Ошибка: \n{str(err)}\nнадо что-то с этим делать",
+            reply_markup=admin_reply_keyboards.default_admin_keyboard.as_markup(
+                resize_keyboard=True))
+        await state.clear()
 
 
 @admin_router.message(StateFilter(AddTeam.logo))

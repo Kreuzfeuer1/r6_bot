@@ -11,10 +11,10 @@ class DataBaseSession(BaseMiddleware):
 
     async def __call__(
         self,
-        handler: Callable[[TelegramObject, Dict[str, Any], Awaitable[Any]]],
+        handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
         event: TelegramObject,
         data: Dict[str, Any],
-    ):
+    ) -> Any:
         async with self.session_pool() as session:
-            data['sessions'] = session
+            data['session'] = session
             return await handler(event, data)
