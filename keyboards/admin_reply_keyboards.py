@@ -3,13 +3,15 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from keyboards.reply_keyboards import start_keyboard
 
+
 start_admin_keyboard = ReplyKeyboardBuilder()
 start_admin_keyboard.add(
-    KeyboardButton(text="Зашёл просто так"),
+    KeyboardButton(text="Список команд"),
     KeyboardButton(text="Добавить команду"),
-    KeyboardButton(text="Добавить турнир")
+    KeyboardButton(text="Добавить турнир"),
+    KeyboardButton(text="Зашёл просто так"),
 )
-start_admin_keyboard.adjust(1, 2)
+start_admin_keyboard.adjust(2, 1, 1)
 
 
 default_admin_keyboard = ReplyKeyboardBuilder()

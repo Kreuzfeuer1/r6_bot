@@ -2,10 +2,14 @@ from aiogram import  F, types, Router
 from aiogram.filters import CommandStart, Command, or_f, StateFilter
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from keyboards import  reply_keyboards
 
+from database.orm_query import orm_get_all_teams
+
 user_private_router = Router()
+
 
 @user_private_router.message(or_f(CommandStart(), (F.text == 'Назад')))
 async def start_cmd(message: types.Message):
@@ -35,6 +39,7 @@ async def follow_teams_cmd(message: types.Message):
                 resize_keyboard=True,
                 input_field_placeholder='Что вас интересует?'))
 
+
 """FSM code for cancel all actions"""
 @user_private_router.message(StateFilter('*'), Command('отмена'))
 @user_private_router.message(StateFilter('*'), F.text.casefold() == 'отмена')
@@ -55,8 +60,10 @@ class AddFollowTeam(StatesGroup):
 
 
 @user_private_router.message(StateFilter(None), F.text == 'Добавить отслеживаемую команду')
-async def add_follow_team_name(message: types.Message, state: FSMContext):
-    await message.answer('Введите название команды',
+async def add_follow_team_name(message: types.Message, state: FSMContext, session: AsyncSession):
+    for team in await orm_get_all_teams(session=session):
+        await message.answer(team.name)
+    await message.answer('Введите название команды из приведённого выше списка',
             reply_markup=reply_keyboards.fsm_keyboard.as_markup(
                 resize_keyboard=True
             ))
@@ -106,7 +113,6 @@ async def ending_delete_follow_team(message: types.Message, state: FSMContext):
 @user_private_router.message(StateFilter(DeleteFollowTeam.name))
 async def err_ending_delete_follow_team(message: types.Message, state: FSMContext):
     await message.answer('Вы введи не допустимые данные, введите название команды текстом')
-
 
 
 @user_private_router.message(or_f(Command('results'), (F.text == 'Результаты последних матчей')))
