@@ -4,10 +4,11 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.orm_query import orm_add_team
+from database.orm_query import orm_add_team, orm_get_all_teams, orm_delete_team
 
 from filters.chat_types_filters import ChatTypeFilter, IsAdmin
-from keyboards import admin_reply_keyboards, reply_keyboards
+
+from keyboards import admin_reply_keyboards, reply_keyboards, inline_keyboards
 
 
 admin_router = Router()
@@ -20,6 +21,26 @@ async def start_admin_cmd(message: types.Message):
             reply_markup=admin_reply_keyboards.start_admin_keyboard.as_markup(
                 resize_keyboard=True,
                 input_field_placeholder="Удачи"))
+
+
+@admin_router.message(F.text == 'Список команд')
+async def get_team_list(message: types.Message, session: AsyncSession):
+    for team in await orm_get_all_teams(session=session):
+        await message.answer(
+            team.name,
+            reply_markup=inline_keyboards.get_callback_buttons(buttons={
+                'Удалить': f'delete_{team.id}',
+                'Изменить': f'change_{team.id}'
+            }))
+    await message.answer('Вот список команд')
+
+
+@admin_router.callback_query(F.data.startswith('delete_'))
+async def delete_team(callback: types.CallbackQuery, session: AsyncSession):
+    team_id = callback.data.split("_")[-1]
+    await orm_delete_team(session, int(team_id))
+    await callback.answer("Команда удалена")
+    await callback.message.answer("Команда удалёна")
 
 
 @admin_router.message(F.text == 'Зашёл просто так')
