@@ -23,3 +23,15 @@ async def orm_get_all_teams(session: AsyncSession):
     query = select(Team)
     result = await session.execute(query)
     return result.scalars().all()
+
+
+async def orm_get_team(session: AsyncSession, team_id: int):
+    query = select(Team).where(Team.id == team_id)
+    result = await session.execute(query)
+    await result.commit()
+
+
+async def orm_delete_team(session: AsyncSession, team_id: int):
+    query = delete(Team).where(Team.id == team_id)
+    await session.execute(query)
+    await session.commit()
