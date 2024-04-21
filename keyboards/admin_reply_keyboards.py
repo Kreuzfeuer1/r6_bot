@@ -17,13 +17,13 @@ start_admin_keyboard.adjust(2, 1, 1)
 default_admin_keyboard = ReplyKeyboardBuilder()
 default_admin_keyboard.attach(start_keyboard)
 default_admin_keyboard.row(
-    KeyboardButton(text="В админку")
+    KeyboardButton(text="В админку"),
 )
 
 
 fsm_keyboard = ReplyKeyboardBuilder()
 fsm_keyboard.add(
     KeyboardButton(text='Шаг назад'),
-    KeyboardButton(text='Отмена действия')
+    KeyboardButton(text='Отмена действия'),
 )
 fsm_keyboard.adjust(2, )

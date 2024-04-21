@@ -1,11 +1,11 @@
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import Team
 
 
 async def orm_add_team(session: AsyncSession, data: dict):
-    object = Team(
+    object_team = Team(
         name = data["name"],
         first_player = data["first_player"],
         second_player = data["second_player"],
@@ -13,9 +13,9 @@ async def orm_add_team(session: AsyncSession, data: dict):
         fourth_player = data["fourth_player"],
         fifth_player = data["fifth_player"],
         coach = data["coach"],
-        logo = data["logo"]
+        logo = data["logo"],
     )
-    session.add(object)
+    session.add(object_team)
     await session.commit()
 
 
