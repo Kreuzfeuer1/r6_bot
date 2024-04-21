@@ -5,7 +5,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 def get_callback_buttons(
     *,
     buttons: dict[str, str],
-    sizes: tuple[int] = (2,)):
+        sizes: tuple[int] = (2,)):
     keyboard = InlineKeyboardBuilder()
 
     for text, data in buttons.items():

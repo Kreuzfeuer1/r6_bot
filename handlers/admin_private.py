@@ -1,14 +1,14 @@
 from aiogram import F, Router, types
 from aiogram.filters import Command, or_f, StateFilter
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.fsm.context import FSMContext 
+from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.orm_query import orm_add_team, orm_get_all_teams, orm_delete_team
 
 from filters.chat_types_filters import ChatTypeFilter, IsAdmin
 
-from keyboards import admin_reply_keyboards, reply_keyboards, inline_keyboards
+from keyboards import admin_reply_keyboards, inline_keyboards
 
 
 admin_router = Router()
@@ -17,10 +17,11 @@ admin_router.message.filter(ChatTypeFilter(['private']), IsAdmin())
 
 @admin_router.message(or_f(Command('admin'), (F.text == 'В админку')))
 async def start_admin_cmd(message: types.Message):
-    await message.answer('Что желаете сделать?',
-            reply_markup=admin_reply_keyboards.start_admin_keyboard.as_markup(
-                resize_keyboard=True,
-                input_field_placeholder="Удачи"))
+    await message.answer(
+        'Что желаете сделать?',
+        reply_markup=admin_reply_keyboards.start_admin_keyboard.as_markup(
+            resize_keyboard=True,
+            input_field_placeholder="Удачи"))
 
 
 @admin_router.message(F.text == 'Список команд')
@@ -30,7 +31,7 @@ async def get_team_list(message: types.Message, session: AsyncSession):
             team.name,
             reply_markup=inline_keyboards.get_callback_buttons(buttons={
                 'Удалить': f'delete_{team.id}',
-                'Изменить': f'change_{team.id}'
+                'Изменить': f'change_{team.id}',
             }))
     await message.answer('Вот список команд')
 
@@ -45,25 +46,31 @@ async def delete_team(callback: types.CallbackQuery, session: AsyncSession):
 
 @admin_router.message(F.text == 'Зашёл просто так')
 async def starring(message: types.Message):
-    await message.answer('Окей',
-            reply_markup=admin_reply_keyboards.default_admin_keyboard.as_markup(
-                resize_keyboard=True,
-                input_field_placeholder="Что вас интересует?"))
+    await message.answer(
+        'Окей',
+        reply_markup=admin_reply_keyboards.default_admin_keyboard.as_markup(
+            resize_keyboard=True,
+            input_field_placeholder="Что вас интересует?"))
 
 
 """FSM code for cancel all actions"""
+
+
 @admin_router.message(StateFilter('*'), F.text.casefold() == 'отмена действия')
 async def cancel_handler(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
     if current_state is None:
         return
     await state.clear()
-    await message.answer("Отмена действия",
-            reply_markup=admin_reply_keyboards.default_admin_keyboard.as_markup(
-                resize_keyboard=True))
+    await message.answer(
+        "Отмена действия",
+        reply_markup=admin_reply_keyboards.default_admin_keyboard.as_markup(
+            resize_keyboard=True))
 
 
 """FSM for add team"""
+
+
 class AddTeam(StatesGroup):
     name = State()
     first_player = State()
@@ -73,8 +80,6 @@ class AddTeam(StatesGroup):
     fifth_player = State()
     coach = State()
     logo = State()
-
-
     texts = {
         'AddTeam:name': 'введите название команды заново',
         'AddTeam:first_player': 'введите nickname первого игрока заново',
@@ -90,9 +95,10 @@ class AddTeam(StatesGroup):
 async def cancel_previous_step(message: types.Message, state: FSMContext):
     current_step = await state.get_state()
     if current_step == AddTeam.name:
-        await message.answer("Вы были на первом шаге, добавление команды отменено",
-                reply_markup=admin_reply_keyboards.default_admin_keyboard.as_markup(
-                    resize_keyboard=True))
+        await message.answer(
+            "Вы были на первом шаге, добавление команды отменено",
+            reply_markup=admin_reply_keyboards.default_admin_keyboard.as_markup(
+                resize_keyboard=True))
         await state.clear()
     else:
         previous = None
@@ -107,8 +113,9 @@ async def cancel_previous_step(message: types.Message, state: FSMContext):
 
 @admin_router.message(StateFilter(None), F.text == 'Добавить команду')
 async def start_adding_team(message: types.Message, state: FSMContext):
-    await message.answer("Введите название команды",
-            reply_markup=admin_reply_keyboards.fsm_keyboard.as_markup(
+    await message.answer(
+        "Введите название команды",
+        reply_markup=admin_reply_keyboards.fsm_keyboard.as_markup(
             resize_keyboard=True))
     await state.set_state(AddTeam.name)
 
@@ -174,7 +181,7 @@ async def err_add_fifth_player(message: types.Message, state: FSMContext):
 
 
 @admin_router.message(StateFilter(AddTeam.fifth_player), F.text)
-async  def add_coach(message: types.Message, state: FSMContext):
+async def add_coach(message: types.Message, state: FSMContext):
     await state.update_data(fifth_player=message.text)
     await message.answer("Введите nickname тренера")
     await state.set_state(AddTeam.coach)
@@ -192,18 +199,14 @@ async def add_logo(message: types.Message, state: FSMContext):
     await state.set_state(AddTeam.logo)
 
 
-@admin_router.message(StateFilter(AddTeam.coach))
-async def err_add_second_player(message: types.Message, state: FSMContext):
-    await message.answer("Вы введи не допустимые данные, введите nickname тренера текстом")
-
-
 @admin_router.message(StateFilter(AddTeam.logo), F.photo)
 async def end_adding_team(message: types.Message, state: FSMContext, session: AsyncSession):
-    await state.update_data(logo=message.photo[-1].file_id)    
+    await state.update_data(logo=message.photo[-1].file_id)
     data = await state.get_data()
     try:
         await orm_add_team(session=session, data=data)
-        await message.answer("Команда добавлена",
+        await message.answer(
+            "Команда добавлена",
             reply_markup=admin_reply_keyboards.default_admin_keyboard.as_markup(
                 resize_keyboard=True))
         await state.clear()

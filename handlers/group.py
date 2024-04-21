@@ -1,4 +1,4 @@
-from aiogram import F, Bot, types, Router
+from aiogram import Bot, types, Router
 from aiogram.filters import Command
 
 from filters.chat_types_filters import ChatTypeFilter
@@ -16,7 +16,7 @@ async def get_admin(message: types.Message, bot: Bot):
     admins_list = [
         member.user.id
         for member in admins_list
-            if member.status == 'creator' or member.status =='administrator'
+        if member.status == 'creator' or member.status == 'administrator'
     ]
     bot.my_admins_list = admins_list
     if message.from_user.id in admins_list:

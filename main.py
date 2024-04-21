@@ -1,7 +1,6 @@
 import asyncio
 import os
 from aiogram import Bot, Dispatcher, types
-from aiogram.filters import CommandStart
 from aiogram.enums import ParseMode
 from aiogram.fsm.strategy import FSMStrategy
 
@@ -50,4 +49,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-    
