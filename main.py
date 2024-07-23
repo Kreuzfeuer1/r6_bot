@@ -1,6 +1,9 @@
 import asyncio
 import os
+import logging
+import sys
 from aiogram import Bot, Dispatcher, types
+from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.fsm.strategy import FSMStrategy
 
@@ -15,7 +18,6 @@ from handlers.admin_private import admin_router
 from common_const.bot_cmds_list import private
 
 
-bot = Bot(token=os.getenv('TOKEN'), parse_mode=ParseMode.HTML)
 
 
 db = Dispatcher(fsm_strategy = FSMStrategy.USER_IN_CHAT)
@@ -38,6 +40,8 @@ async def on_shutdown(bot):
 
 
 async def main():
+    bot = Bot(token=os.getenv('TOKEN'), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    
     db.startup.register(on_start)
     db.shutdown.register(on_shutdown)
 
@@ -48,4 +52,5 @@ async def main():
     await db.start_polling(bot, allowed_updates=db.resolve_used_update_types())
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     asyncio.run(main())
