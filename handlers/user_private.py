@@ -1,8 +1,9 @@
 from aiogram import F, types, Router
 from aiogram.filters import CommandStart, Command, or_f, StateFilter
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from fsm.privat_fsm import AddFollowTeam
 
 from keyboards import reply_keyboards
 
@@ -58,13 +59,6 @@ async def cancel_handler(message: types.Message, state: FSMContext):
         reply_markup=reply_keyboards.start_keyboard.as_markup(
             resize_keyboard=True,
             input_field_placeholder='Что вас интересует?'))
-
-
-"""FSM code for adding follow team"""
-
-
-class AddFollowTeam(StatesGroup):
-    name = State()
 
 
 @user_private_router.message(StateFilter(None), F.text == 'Добавить отслеживаемую команду')
