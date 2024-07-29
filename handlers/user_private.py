@@ -3,7 +3,7 @@ from aiogram.filters import CommandStart, Command, or_f, StateFilter
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from fsm.privat_fsm import AddFollowTeam
+from fsm.privat_fsm import AddFollowTeam, DeleteFollowTeam
 
 from keyboards import reply_keyboards
 
@@ -45,8 +45,6 @@ async def follow_teams_cmd(message: types.Message):
 
 
 """FSM code for cancel all actions"""
-
-
 @user_private_router.message(StateFilter('*'), Command('отмена'))
 @user_private_router.message(StateFilter('*'), F.text.casefold() == 'отмена')
 async def cancel_handler(message: types.Message, state: FSMContext):
@@ -87,13 +85,6 @@ async def end_adding_follow_team(message: types.Message, state: FSMContext):
 @user_private_router.message(StateFilter(AddFollowTeam.name))
 async def err_end_adding_follow_team(message: types.Message, state: FSMContext):
     await message.answer('Вы введи не допустимые данные, введите название команды текстом')
-
-
-"""FSM code for delete team from follow teams"""
-
-
-class DeleteFollowTeam(StatesGroup):
-    name = State()
 
 
 @user_private_router.message(StateFilter(None), F.text == 'Удалить команду из отслеживаемых')

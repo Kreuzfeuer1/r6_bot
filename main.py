@@ -18,8 +18,6 @@ from handlers.admin_private import admin_router
 from common_const.bot_cmds_list import private
 
 
-
-
 db = Dispatcher(fsm_strategy = FSMStrategy.USER_IN_CHAT)
 
 db.include_router(user_private_router)

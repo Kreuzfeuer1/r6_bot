@@ -1,10 +1,7 @@
 from aiogram.fsm.state import State, StatesGroup
 
 
-
 """FSM for add team"""
-
-
 class AddTeam(StatesGroup):
     name = State()
     first_player = State()
@@ -23,3 +20,4 @@ class AddTeam(StatesGroup):
         'AddTeam:fifth_player': 'введите nickname пятого игрока заново',
         'AddTeam:coach': 'введите nickname тренера заново',
     }
+
