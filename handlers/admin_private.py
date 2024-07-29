@@ -1,10 +1,11 @@
 from aiogram import F, Router, types
 from aiogram.filters import Command, or_f, StateFilter
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.orm_query import orm_add_team, orm_get_all_teams, orm_delete_team
+
+from fsm.admin_fsm import AddTeam
 
 from filters.chat_types_filters import ChatTypeFilter, IsAdmin
 
@@ -66,29 +67,6 @@ async def cancel_handler(message: types.Message, state: FSMContext):
         "Отмена действия",
         reply_markup=admin_reply_keyboards.default_admin_keyboard.as_markup(
             resize_keyboard=True))
-
-
-"""FSM for add team"""
-
-
-class AddTeam(StatesGroup):
-    name = State()
-    first_player = State()
-    second_player = State()
-    third_player = State()
-    fourth_player = State()
-    fifth_player = State()
-    coach = State()
-    logo = State()
-    texts = {
-        'AddTeam:name': 'введите название команды заново',
-        'AddTeam:first_player': 'введите nickname первого игрока заново',
-        'AddTeam:second_player': 'введите nickname второго игрока заново',
-        'AddTeam:third_player': 'введите nickname третьего игрока заново',
-        'AddTeam:fourth_player': 'введите nickname четвёртого игрока заново',
-        'AddTeam:fifth_player': 'введите nickname пятого игрока заново',
-        'AddTeam:coach': 'введите nickname тренера заново',
-    }
 
 
 @admin_router.message(StateFilter('*'), F.text == 'Шаг назад')
